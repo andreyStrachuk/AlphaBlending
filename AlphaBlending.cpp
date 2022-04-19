@@ -1,22 +1,17 @@
 #include "Blending.hpp"
 
-// const char I = 255u,
-//            Z = 0x80u;
-           
-// const __m128i   _0 =                  _mm_set_epi8 (0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0);
-// const __m128i _255 = _mm_meow8_epi16 (_mm_set_epi8 (I,I,I,I, I,I,I,I, I,I,I,I, I,I,I,I));
-
-//-------------------------------------------------------------------------------------------------
-
 int main() {
     sf::Image topIm;
-    topIm.loadFromFile ("src/Racket.bmp");
+    int res = topIm.loadFromFile ("src/Racket.bmp");
+    ASSERT_OK (res == 0, PrintErrors (UNABLETOOPENIMAGE); return UNABLETOOPENIMAGE);
 
     sf::Image downIm;
-    downIm.loadFromFile ("src/Table.bmp");
+    res = downIm.loadFromFile ("src/Table.bmp");
+    ASSERT_OK (res == 0, PrintErrors (UNABLETOOPENIMAGE); return UNABLETOOPENIMAGE);
 
     sf::Font font;
-    font.loadFromFile ("src/Ubuntu-Bold.ttf");
+    res = font.loadFromFile ("src/Ubuntu-Bold.ttf");
+    ASSERT_OK (res == 0, PrintErrors (UNABLETOFINDFONT); return UNABLETOFINDFONT);
 
     sf::Vector2u topSize = topIm.getSize ();
     sf::Vector2u downSize = downIm.getSize ();
@@ -25,7 +20,8 @@ int main() {
     const sf::Uint8 *pxl1 = downIm.getPixelsPtr ();
 
     Screen scr {};
-    ScreenInit (&scr, 300, 225, &downSize);
+    res = ScreenInit (&scr, 300, 225, &downSize);
+    ASSERT_OK (res != OK, return res);
 
     sf::RenderWindow window(sf::VideoMode(downSize.x, downSize.y), "SFML window");
     sf::Clock clock;
@@ -35,8 +31,8 @@ int main() {
 
         OnClick (&scr);
 
-        for (int i = 0; i < 500; ++i)                       // this is made for noticing fps and further optimization
-            Blend (&scr, pxl1, pxl2, topSize, downSize);
+        for (int i = 0; i < 50; ++i)                       // this is made for noticing fps
+            BlendSSE (&scr, pxl1, pxl2, topSize, downSize);
 
         time = clock.getElapsedTime (); 
         sf::Text txt (std::to_string (1 / time.asSeconds()), font);
