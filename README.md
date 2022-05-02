@@ -16,3 +16,5 @@ $ ./alpha
 | :----- | :----- | :-----        |
 |FPS| ~130| ~80|
 
+As a result, we have 62.5% boost. As I think, it's worth using intrinsics.
+
